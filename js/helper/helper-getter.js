@@ -18,12 +18,12 @@
       ? this.getQuestionInfoForContest(title, url, $wrap)
       : this.getQuestionInfoForProblem(title, url, $wrap)
 
-    var markdown = this.translateToMarkdown(question.title) + '\n\n'
+    var markdown = `<h2 id="${question.url.slice(0,-1).split('/').pop()}">${question.title.replace(/[0-9]/g, '').replace('.','').trim()}</h2>` + '\n\n'
       + this.translateToMarkdown(question.info) + '\n\n'
       + this.clearContentMarkdown(this.translateToMarkdown(question.content)) + '\n\n'
 
     // Clear more \n
-    markdown = markdown.replace(/\n{4,}/g, '\n\n\n') + question.answer
+    markdown = markdown.replace(/\n{4,}/g, '\n\n\n').replaceAll('</sup>', '').replaceAll('<sup>', '^') + question.answer
 
     return markdown
   }
@@ -41,7 +41,7 @@
   Getter.prototype.getQuestionInfoForProblem = function (title, url, $wrap) {
     var $description = $('[data-key=description-content]')
     // Title
-    title = '<h3><a href="' + url + '">' + title + '</a></h3>'
+    // title = '<h3><a href="' + url + '">' + title + '</a></h3>'
 
     // Difficulty
     var $difficulty = $description.find('div div div').eq(1).find('div').first()
@@ -107,10 +107,11 @@
       $wrap.find('.CodeMirror-code').first(),
       $wrap.find('.Select-value-label').first().text()
     )
-
+    console.log('fuck')
+    console.log(title.replace(/[0-9]/g, '').replace('.','').trim())
     return {
       url: url,
-      title: title,
+      title: title.replace(/[0-9]/g, '').replace('.','').trim(),
       info: info,
       content: content,
       answer: answer
@@ -166,12 +167,9 @@
       var $line = $(this)
       answerLines.push($line.text())
     })
+    
+    return ''
 
-    return '#### Solution'
-      + '\n\nLanguage: **' + language + '**'
-      + '\n\n```' + language.toLowerCase() + '\n'
-      + answerLines.join('\n')
-      + '\n```'
   }
 
   /**
